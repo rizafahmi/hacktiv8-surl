@@ -1,10 +1,16 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="UTF-8">
-  <title></title>
-</head>
-<body>
-  <h1>{{ surl }}</h1>
-</body>
-</html>
+{% extends "layout.html" %}
+{% block body %}
+  <div class="ui middle aligned center aligned grid">
+    <div class="column">
+      <div class="ui raised segment">
+        <pre>{{surl}}</pre>
+        <div class="ui buttons">
+          <a href="{{surl}}" target="_blank" class="ui teal button">Go!</a>
+          <div class="or"></div>
+          <a href="/new" class="ui button">Add new</a>
+        </div>
+
+      </div>
+    </div>
+  </div>
+{% endblock %}
