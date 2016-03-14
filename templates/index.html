@@ -1,0 +1,27 @@
+{% extends "layout.html" %}
+{% block body %}
+<div class="ui container">
+  <table class="ui celled padded table">
+    <thead>
+      <tr>
+        <th class="single line">URL</th>
+        <th>Short URL</th>
+        <th>Pixel Script</th>
+      </tr></thead>
+      <tbody>
+        {% for site in sites %}
+        <tr>
+          <td>
+            {{site.url}}
+          </td>
+          <td class="single line">
+            {{site.surl}}
+          </td>
+          <td><pre>{{site.pixel_script | safe}}</pre></td>
+        </tr>
+        {% endfor %}
+      </tbody>
+  </table>
+  <a href="/new" class="fluid ui teal button">New Url</a>
+</div>
+{% endblock %}

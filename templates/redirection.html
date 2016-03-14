@@ -19,6 +19,7 @@
   <meta property="og:image:height" content="{{image_height}}">
   {% endif %}
   <meta property="og:description" content="{{description}}">
+  {{ pixel_script | safe }}
 </head>
 <body>
   
@@ -27,7 +28,6 @@
 
   <script>
     setTimeout(function(){ console.log("Loading fb pixel..."); }, 3000);
-{{ pixel_script | safe }}
     window.location = "http://{{ url | safe }}";
   </script>
 </body>

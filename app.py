@@ -4,6 +4,8 @@ from urlparse import urlparse
 import models
 import ast
 import urllib
+import shortuuid
+import utils
 
 DEBUG = True
 HOST = '0.0.0.0'
@@ -25,34 +27,36 @@ def after_request(response):
     return response
 
 @app.route("/")
-def hello():
-    return "Hello, nurse!"
+def index():
+    sites = models.Site.select()
+    return render_template("index.html", sites=sites)
 
 @app.route("/new", methods=['GET', 'POST'])
 def new():
     if request.method == 'POST':
-        original_url = request.form.get('url')
+        original_url = request.form.get('url').encode('utf-8')
         # if urlparse(original_url).schema == '':
         # original_url = 'http://' + original_url
         if "http" in original_url:
             original_url = original_url.strip("http://")
         if "https" in original_url:
             original_url = original_url.strip("https://")
-        pixel_script = request.form.get('pixel_script')
-        (site, created) = models.Site.create_surl(original_url.encode('utf-8'), pixel_script.encode('utf-8'))
+        pixel_script = request.form.get('pixel_script').encode('utf-8')
+        # (site, created) = models.Site.create_surl(original_url.encode('utf-8'), pixel_script.encode('utf-8'))
 
         # return render_template("result.html", id=site.id)
-        return redirect(url_for("result", id=site.id))
+        # return redirect(url_for("result", id=site.id))
+
+        metadata = utils.get_metadata(original_url)
+        html_file = render_template("redirection.html", url=original_url, title=metadata.get("title"), type=metadata.get("type"), image=metadata.get("image"), image_type=metadata.get("image_type"), image_width=metadata.get("image_width"), image_height=metadata.get("image_height"), description=metadata.get("description"), pixel_script=pixel_script)
+        filename = original_url.encode('utf-8').split("/")[0]
+        file = open("static/" + filename + ".html", "w");
+        file.write(html_file.encode('utf-8'))
+        file.close()
+
+        return redirect(SHORT_SITE + "/static/" + filename + ".html" )
 
     return render_template("new.html")
-
-@app.route("/r/<surl>")
-def redirect_surl(surl):
-    site = models.Site.get(models.Site.surl == SHORT_SITE + "/r/" + surl)
-
-    metadata = ast.literal_eval(site.metadata)
-
-    return render_template("redirection.html", url=site.url, title=metadata.get("title"), type=metadata.get("type"), image=metadata.get("image"), image_type=metadata.get("image_type"), image_width=metadata.get("image_width"), image_height=metadata.get("image_height"), description=metadata.get("description"), pixel_script=site.pixel_script)
 
 @app.route("/result/<id>")
 def result(id):
