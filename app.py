@@ -4,8 +4,8 @@ from urlparse import urlparse
 import models
 import ast
 import urllib
-import shortuuid
 import utils
+import csv
 
 DEBUG = True
 HOST = '0.0.0.0'
@@ -35,26 +35,37 @@ def index():
 def new():
     if request.method == 'POST':
         original_url = request.form.get('url').encode('utf-8')
-        # if urlparse(original_url).schema == '':
-        # original_url = 'http://' + original_url
         if "http" in original_url:
             original_url = original_url.strip("http://")
         if "https" in original_url:
             original_url = original_url.strip("https://")
         pixel_script = request.form.get('pixel_script').encode('utf-8')
-        # (site, created) = models.Site.create_surl(original_url.encode('utf-8'), pixel_script.encode('utf-8'))
-
-        # return render_template("result.html", id=site.id)
-        # return redirect(url_for("result", id=site.id))
 
         metadata = utils.get_metadata(original_url)
-        html_file = render_template("redirection.html", url=original_url, title=metadata.get("title"), type=metadata.get("type"), image=metadata.get("image"), image_type=metadata.get("image_type"), image_width=metadata.get("image_width"), image_height=metadata.get("image_height"), description=metadata.get("description"), pixel_script=pixel_script)
+        template_name = "redirection_debug.html"
+        if DEBUG == True:
+            template_name = "redirection_debug.html"
+        else:
+            template_name = "redirection.html"
+        html_file = render_template(template_name, url=original_url, title=metadata.get("title"), type=metadata.get("type"), image=metadata.get("image"), image_type=metadata.get("image_type"), image_width=metadata.get("image_width"), image_height=metadata.get("image_height"), description=metadata.get("description"), pixel_script=pixel_script)
         filename = original_url.encode('utf-8').split("/")[0]
-        file = open("static/" + filename + ".html", "w");
+        if "." in filename:
+            filename = filename.split(".")[0]
+        filename = filename + ".html"
+        file = open("static/" + filename, "w");
         file.write(html_file.encode('utf-8'))
         file.close()
 
-        return redirect(SHORT_SITE + "/static/" + filename + ".html" )
+        # write to csv
+        fp = open("static/" + "data.csv", "a")
+        try:
+            writer = csv.writer(fp)
+            writer.writerow((str(original_url), str(filename)))
+        finally:
+            fp.close()
+
+
+        return redirect(SHORT_SITE + "/static/" + filename )
 
     return render_template("new.html")
 
