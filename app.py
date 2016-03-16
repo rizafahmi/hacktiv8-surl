@@ -1,5 +1,4 @@
 from flask import Flask, request, render_template, redirect, g, url_for
-from urlparse import urlparse
 
 import models
 import ast
@@ -34,27 +33,46 @@ def index():
 @app.route("/new", methods=['GET', 'POST'])
 def new():
     if request.method == 'POST':
-        original_url = request.form.get('url').encode('utf-8')
-        if "http" in original_url:
-            original_url = original_url.strip("http://")
-        if "https" in original_url:
-            original_url = original_url.strip("https://")
-        pixel_script = request.form.get('pixel_script').encode('utf-8')
+        original_url = str(request.form.get('url'))
+        pixel_script = str(request.form.get('pixel_script'))
 
         metadata = utils.get_metadata(original_url)
+
         template_name = "redirection_debug.html"
         if DEBUG == True:
             template_name = "redirection_debug.html"
         else:
             template_name = "redirection.html"
-        html_file = render_template(template_name, url=original_url, title=metadata.get("title"), type=metadata.get("type"), image=metadata.get("image"), image_type=metadata.get("image_type"), image_width=metadata.get("image_width"), image_height=metadata.get("image_height"), description=metadata.get("description"), pixel_script=pixel_script)
-        filename = original_url.encode('utf-8').split("/")[0]
+
+        if "title" in metadata:
+            metadata_title = metadata.title
+        else:
+            metadata_title = ""
+
+        if "type" in metadata:
+            metadata_type = metadata.type
+        else:
+            metadata_type = ""
+
+        if "image" in metadata:
+            metadata_image = metadata.image
+        else:
+            metadata_image = ""
+
+        if "description" in metadata:
+            metadata_description = metadata.description
+        else:
+            metadata_description = ""
+
+        html_file = render_template(template_name, url=original_url, title=metadata_title, type=metadata_type, image=metadata_image, description=metadata_description, pixel_script=pixel_script)
+
+        filename = str(original_url).split("/")[2]
         if "." in filename:
             filename = filename.split(".")[0]
         filename = filename + ".html"
-        file = open("static/" + filename, "w");
-        file.write(html_file.encode('utf-8'))
-        file.close()
+        with open("static/" + filename, mode="w", encoding="utf-8") as file:
+            file.write(str(html_file))
+            file.close()
 
         # write to csv
         fp = open("static/" + "data.csv", "a")
