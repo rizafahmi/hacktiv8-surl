@@ -1,6 +1,5 @@
 from flask import Flask, request, render_template, redirect, g, url_for
 
-import models
 import ast
 import urllib
 import utils
@@ -13,22 +12,9 @@ SHORT_SITE = 'http://localhost:5000'
 
 app = Flask(__name__)
 
-@app.before_request
-def before_request():
-    """Connect to the database before each request."""
-    g.db = models.DATABASE
-    g.db.connect()
-
-@app.after_request
-def after_request(response):
-    """Close the connection to the database after each request."""
-    g.db.close()
-    return response
-
 @app.route("/")
 def index():
-    sites = models.Site.select()
-    return render_template("index.html", sites=sites)
+    return render_template("index.html")
 
 @app.route("/new", methods=['GET', 'POST'])
 def new():
@@ -87,11 +73,10 @@ def new():
 
     return render_template("new.html")
 
-@app.route("/result/<id>")
-def result(id):
-    site = models.Site.get(models.Site.id == id)
-    return render_template("result.html", surl=site.surl)
+# @app.route("/result/<id>")
+# def result(id):
+#     site = models.Site.get(models.Site.id == id)
+#     return render_template("result.html", surl=site.surl)
 
 if __name__ == '__main__':
-    models.initialize()
     app.run(debug=DEBUG, host=HOST, port=PORT)
