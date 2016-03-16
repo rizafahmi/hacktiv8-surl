@@ -16,10 +16,8 @@ Jinja2==2.8
 MarkupSafe==0.23
 opengraph==0.5
 path.py==8.1.2
-peewee==2.8.0
 pexpect==4.0.1
 pickleshare==0.6
-psycopg2==2.6.1
 ptyprocess==0.5.1
 pyasn1==0.1.9
 pycparser==2.14
