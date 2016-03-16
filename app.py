@@ -5,10 +5,11 @@ import urllib
 import utils
 import csv
 import shortuuid
+import os
 
-DEBUG = True
+DEBUG = False
 HOST = '0.0.0.0'
-PORT = 5000
+PORT = 8000
 SHORT_SITE = 'http://pixell.io'
 
 app = Flask(__name__)
@@ -22,6 +23,7 @@ def new():
     if request.method == 'POST':
         original_url = str(request.form.get('url'))
         pixel_script = str(request.form.get('pixel_script'))
+        keyword = str(request.form.get('keyword'))
 
         try:
             metadata = utils.get_metadata(original_url)
@@ -62,7 +64,11 @@ def new():
         filename = shortuuid.ShortUUID().random(length=6)
         filename = filename + ".html"
 
-        with open("r/" + filename, mode="w", encoding="utf-8") as file:
+        directory = "r/" + keyword
+        if not os.path.exists(directory):
+            os.makedirs(directory)
+
+        with open(directory + "/" + filename, mode="w", encoding="utf-8") as file:
             file.write(str(html_file))
             file.close()
 
@@ -76,7 +82,7 @@ def new():
 
 
         # return redirect(SHORT_SITE + "/static/" + filename )
-        return render_template("new.html", redirect_url=SHORT_SITE + "/r/" + filename)
+        return render_template("new.html", redirect_url=SHORT_SITE + directory + "/" + filename)
 
     return render_template("new.html")
 
