@@ -5,7 +5,7 @@ import urllib
 import utils
 import csv
 
-DEBUG = True
+DEBUG = False
 HOST = '0.0.0.0'
 PORT = 5000
 SHORT_SITE = 'http://localhost:5000'
