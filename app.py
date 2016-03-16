@@ -10,7 +10,7 @@ import os
 DEBUG = False
 HOST = '0.0.0.0'
 PORT = 8000
-SHORT_SITE = 'http://pixell.io'
+SHORT_SITE = 'http://pixell.io/'
 
 app = Flask(__name__)
 
