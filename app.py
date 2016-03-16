@@ -4,11 +4,12 @@ import ast
 import urllib
 import utils
 import csv
+import shortuuid
 
-DEBUG = False
+DEBUG = True
 HOST = '0.0.0.0'
 PORT = 5000
-SHORT_SITE = 'http://localhost:5000'
+SHORT_SITE = 'http://pixell.io'
 
 app = Flask(__name__)
 
@@ -58,11 +59,10 @@ def new():
 
         html_file = render_template(template_name, url=original_url, title=metadata_title, type=metadata_type, image=metadata_image, description=metadata_description, pixel_script=pixel_script)
 
-        filename = str(original_url).split("/")[2]
-        if "." in filename:
-            filename = filename.split(".")[0]
+        filename = shortuuid.ShortUUID().random(length=6)
         filename = filename + ".html"
-        with open("static/" + filename, mode="w", encoding="utf-8") as file:
+
+        with open("r/" + filename, mode="w", encoding="utf-8") as file:
             file.write(str(html_file))
             file.close()
 
@@ -76,7 +76,7 @@ def new():
 
 
         # return redirect(SHORT_SITE + "/static/" + filename )
-        return render_template("new.html", redirect_url=SHORT_SITE + "/static/" + filename)
+        return render_template("new.html", redirect_url=SHORT_SITE + "/r/" + filename)
 
     return render_template("new.html")
 

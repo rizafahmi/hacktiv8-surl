@@ -1,3 +1,6 @@
+data.csv
+static/data.csv
+r/
 # Byte-compiled / optimized / DLL files
 __pycache__/
 *.py[cod]
