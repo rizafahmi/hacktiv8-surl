@@ -22,32 +22,38 @@ def new():
         original_url = str(request.form.get('url'))
         pixel_script = str(request.form.get('pixel_script'))
 
-        metadata = utils.get_metadata(original_url)
+        try:
+            metadata = utils.get_metadata(original_url)
 
-        template_name = "redirection_debug.html"
-        if DEBUG == True:
             template_name = "redirection_debug.html"
-        else:
-            template_name = "redirection.html"
+            if DEBUG == True:
+                template_name = "redirection_debug.html"
+            else:
+                template_name = "redirection.html"
 
-        if "title" in metadata:
-            metadata_title = metadata.title
-        else:
+            if "title" in metadata:
+                metadata_title = metadata.title
+            else:
+                metadata_title = ""
+
+            if "type" in metadata:
+                metadata_type = metadata.type
+            else:
+                metadata_type = ""
+
+            if "image" in metadata:
+                metadata_image = metadata.image
+            else:
+                metadata_image = ""
+
+            if "description" in metadata:
+                metadata_description = metadata.description
+            else:
+                metadata_description = ""
+        finally:
             metadata_title = ""
-
-        if "type" in metadata:
-            metadata_type = metadata.type
-        else:
             metadata_type = ""
-
-        if "image" in metadata:
-            metadata_image = metadata.image
-        else:
             metadata_image = ""
-
-        if "description" in metadata:
-            metadata_description = metadata.description
-        else:
             metadata_description = ""
 
         html_file = render_template(template_name, url=original_url, title=metadata_title, type=metadata_type, image=metadata_image, description=metadata_description, pixel_script=pixel_script)
@@ -69,7 +75,8 @@ def new():
             fp.close()
 
 
-        return redirect(SHORT_SITE + "/static/" + filename )
+        # return redirect(SHORT_SITE + "/static/" + filename )
+        return render_template("new.html", redirect_url=SHORT_SITE + "/static/" + filename)
 
     return render_template("new.html")
 

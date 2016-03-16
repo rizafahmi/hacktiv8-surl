@@ -2,6 +2,11 @@
   {% block body %}
   <div class="ui middle aligned center aligned grid">
     <div class="column">
+      {% if redirect_url %}
+      <div class="ui raised segment">
+        {{ redirect_url | safe }}
+      </div>
+      {% endif %}
       <h2 class="ui teal image header">
         <div class="content">
           Shorten Your Url
